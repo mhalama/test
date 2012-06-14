@@ -1,0 +1,54 @@
+<div class="hero-unit" xmlns="http://www.w3.org/1999/html">
+    <form action="">
+        <h1>Zákazníci</h1>
+        <input title="Search for" ng:model="searchTerm" ng:change="search()">
+    </form>
+
+    <a class="btn btn-primary" ng:click="setTable('crm', 'company')">Zákazníci</a>
+    <a class="btn btn-primary" ng:click="setTable('crm', 'address')">Adresy</a>
+    <a class="btn btn-primary" ng:click="setTable('crm', 'task')">Úkoly</a>
+</div>
+
+<datalist schema='crm' table='company'></datalist>
+
+<div class="row" ng:show="viewState=='edit'">
+    <div class="span12">
+        <form>
+            <label ng:repeat="col in editcols">
+                <span>{{col.label}}</span>
+                <div ng:switch on="col.type">
+                    <div ng:switch-when="string">
+                        <input type="text" ng:model="selectedItem[col.name]"/>
+                    </div>
+                    <div ng:switch-when="combo">
+                        <select ui-select2 ng:model="selectedItem[col.name]" style="width: 500px;">
+                            <option ng:repeat="opt in options(col.f_table).data" value="{{opt.id}}">{{opt.label_x}}</option>
+                        </select>
+                    </div>
+                </div>
+            </label>
+            <input type="button" ng:click="save(table,selectedItem)" value="Save" class="btn btn-success"/>
+            <input type="button" ng:click="cancelEdit()" value="Cancel" class="btn btn-danger"/>
+        </form>
+    </div>
+</div>
+
+<div class="row" ng:show="viewState=='list'">
+    <div class="span12">
+        <button ng:click="create()" class="btn btn-success">Nová položka</button>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th ng:repeat="col in columns">{{col.label}}</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng:repeat="item in items.data">
+                <td ng:repeat="col in columns">{{item[col.name]}}</td>
+                <td><a ng:click="edit(item)" title="Edit"><i class="icon-edit"></i></a> | <a ng:click="delete(item)" title="Delete"><i class="icon-trash"></i></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

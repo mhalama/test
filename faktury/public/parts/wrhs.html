@@ -1,0 +1,13 @@
+<div class="hero-unit" xmlns="http://www.w3.org/1999/html">
+    <form action="">
+        <h1>Sklad</h1>
+        <input title="Search for" ng:model="searchTerm" ng:change="search(searchTerm)">
+    </form>
+
+    <a class="btn btn-primary" ng:click="setTable('quanta')">Zásoby</a>
+    <a class="btn btn-primary" ng:click="setTable('ware')">Komponenty</a>
+    <a class="btn btn-primary" ng:click="setTable('store')">Sklady</a>
+    <a class="btn btn-primary" ng:click="setTable('kind')">Druhy</a>
+</div>
+
+<span ng:include="'parts/components/listeditor.html'"></span>

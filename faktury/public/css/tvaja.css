@@ -1,0 +1,41 @@
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+header {
+    text-align: center;
+}
+
+.home {
+    /*background: url('https://kippt.com/static/img/bg-home.jpg') center 40px no-repeat white;
+    padding-top: 55px;*/
+    background: url('../image/ciml.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.home article.container {
+    margin-top: 0; }
+.home .hero-unit {
+    background: none;
+    height: 304px;
+    padding: 105px 620px 0 0;
+    margin-right: -80px;
+    /*background: url('https://kippt.com/static/img/home-hero.png') right bottom no-repeat; }*/
+.home .hero-unit h1 {
+    font-size: 38px;
+    margin-top: 0.2em;
+    line-height: 1.1;
+    font-weight: normal; }
+.home .hero-unit p {
+    margin: 1em 0;
+    font-size: 20px; }
+.home .hero-unit .btn {
+    font-size: 20px;
+    padding: 12px 26px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    margin-top: 15px; }

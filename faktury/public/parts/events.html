@@ -1,0 +1,49 @@
+<div class="row">
+
+    <div class="span3">
+
+        <select ng:model="station" ng:options="st.station_name for st in stations.data">
+        </select>
+
+        <input type="text" ng:model="fromDate" placeholder="Datum od">
+        <input type="text" ng:model="untilDate" placeholder="Datum do">
+<!--
+        <input ui-date ng:model="fromDate" placeholder="Datum od">
+        <input ui-date ng:model="untilDate" placeholder="Datum do">
+-->
+        <select ng:model="wizard" ng:change="selectWizard(wizard)" ng:options="w.fncode for w in wizards.data"></select>
+
+        <div ng:repeat="(ixf, filter) in filters.data" ng:switch="filter.ftype">
+            <div ng:switch-when="filter.intval">
+                <input type="text" ng:model="params[ixf]" value="">
+            </div>
+        </div>
+
+        <select ng:model="period" ng:options="p.name for p in periods">
+        </select>
+
+        <input type="button" value="Spustit" ng:click="query()" class="btn btn-success">
+    </div>
+
+    <div class="span9">
+
+        <div id="graph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th ng:repeat="col in columns">{{col.label}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng:repeat="item in items">
+                <td ng:repeat="col in columns">{{item[col.name]}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div id="graph" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+    </div>
+
+    {{station}}
+</div>

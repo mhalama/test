@@ -1,0 +1,14 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th ng:repeat="col in columns">{{col.label}}</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng:repeat="item in items.data">
+        <td ng:repeat="col in columns">{{item[col.name]}}</td>
+        <td><a ng:click="edit(item)" title="Edit"><i class="icon-edit"></i></a> | <a ng:click="delete(item)" title="Delete"><i class="icon-trash"></i></a></td>
+    </tr>
+    </tbody>
+</table>
