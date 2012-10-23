@@ -1,3 +1,4 @@
-function HomeCtrl($scope) {
+function homeCtrl($scope, $resource) {
 
+	console.log("creating");
 }

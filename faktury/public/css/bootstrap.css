@@ -769,6 +769,13 @@ input[required], textarea[required], select[required] {
   -webkit-border-radius: 5px;
   border-radius: 5px;
   }
+ 
+ .userPicker {
+  	padding-top:10px;
+  	margin-top: 10px;
+  	
+  }
+  
 
 .btn.rounded {
   -moz-border-radius: 15px;

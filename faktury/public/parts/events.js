@@ -1,162 +1,92 @@
-function EventsCtrl($scope, analysisService) {
+function eventCtrl($scope, $resource, dataService, $log, socketio) {
+		
+	 var socket = socketio;
+	 var twoMonth = 1 * 24 * 60 * 60 * 1000 *60;
+	 $scope.invoices=[];
+	 $scope.invoiceFilter="";
+	 $scope.projectFilter="";
+	 $scope.userFilter="";
+	 $scope.events;
+	 
+	 $scope.filterType="invoice";
+	 
+	 $scope.getDateStamp=function(date){
+	    	var d = new Date(date);
+	    	return d.getUTCFullYear() + '-' + (d.getUTCMonth() + 1) + '-' + (d.getUTCDate() +1) ;
+	  };
+	 
+	 $scope.dateFromFilter = $scope.getDateStamp(new Date().getTime()-twoMonth);
+	 $scope.dateUntilFilter = new Date();
+	 
+	 
+	 
+	 socket.on('lastEvents', function(data) {
+			$scope.$apply(function() {
+				$scope.lastEvents = data;
+			});
+	 });
+	
+	 $scope.getProjects=function(user){
+	    	if(user===null){
+	    		$scope.projects= dataService.getProjects({});
+	    	}
+	    	else{
+	    		$scope.projects= dataService.getProjects({filter:user});
+	    	}
+		    	
+		 };  
+		    
+	$scope.getInvoices=function(){
+	    $scope.invoices= dataService.getAllInvoices({},function(){
+	    	console.log($scope.invoices);
+	    });   	
+	}; 
+	
+	
+var getLastEvents = function(){
+	socket.emit("lastEvents", {
+	});
+};
+	    
+		 
+	$scope.getProjects(null);
+	$scope.getInvoices();
+	
+	
+	$scope.getEvents=function(invoice,project,user){
+		
+		var from = $scope.getDateStamp($scope.dateFromFilter);
+		var until = $scope.getDateStamp($scope.dateUntilFilter);
+		
+		if(invoice!=="" || project !=="" || user!==""){
+		
+			if(invoice!==""){
+				$scope.events=dataService.getFilteredEvents({invoiceId:invoice,from:from, until:until},function () {
+		             $log.info("loading done... ", $scope.events);
+		             console.log("done-----");
+		         });
+			}
+			else if(project!=""){
+				$scope.events=dataService.getFilteredEvents({project:project,from:from, until:until});
+			}
+			else if(user!=""){
+				$scope.events=dataService.getFilteredEvents({user:user,from:from, until:until});
+			}
+			
+			 $scope.invoiceFilter="";
+			 $scope.projectFilter="";
+			 $scope.userFilter="";
+		};
+	};
+	
+	
+	$scope.getUsers=function(){
+		$scope.users= dataService.getUsers({},function(){
+	      console.log($scope.users.data);
+	     });
 
-    $scope.stations = [];
-    $scope.wizards = [];
-    $scope.filters = [];
-    $scope.params = [];
-    $scope.periods = [
-        {
-            id:"H",
-            name:"Hodiny"
-        },
-        {
-            id:"D",
-            name:"Dny"
-        },
-        {
-            id:"M",
-            name:"Měsíce"
-        }
-    ];
-    $scope.events = [];
-
-    $scope.stations = analysisService.stations();
-
-    $scope.wizards = analysisService.wizards();
-
-    $scope.selectWizard = function (wz) {
-        var wfs = analysisService.wizardFilters({wid:wz.id}, function () {
-            $scope.filters = wfs;
-            $scope.params = [];
-            $scope.params[wfs.length - 1] = null;
-        });
-    };
-
-    $scope.query = function () {
-        var pars = [];
-        pars[0] = $scope.station.id;
-        pars[1] = $scope.fromDate;
-        pars[2] = $scope.untilDate;
-        pars = pars.concat($scope.params);
-        console.log(pars);
-        var rs = analysisService.wizardQuery({wid:$scope.wizard.id, params:pars}, function () {
-            $scope.columns = [];
-            $scope.items = statcalc(rs.data);
-            if ($scope.items.length > 0) {
-                for (var prop in $scope.items[0]) {
-                    var propdesc = {name:prop, label:prop, readonly:false, type:"string"};
-                    $scope.columns.push(propdesc);
-                }
-
-                createChart($scope.items);
-            }
-        });
-    }
-
-    function createChart(data) {
-        var datacat = [];
-        var datacnt = [];
-        var datadiff = [];
-        for (var i = 0; i < data.length; i++) {
-            datacat.push(data[i].dt);
-            datacnt.push(data[i].count);
-            datadiff.push(data[i].timediff); // in hours
-        }
-
-        chart = new Highcharts.Chart({
-            chart:{
-                renderTo:'graph',
-                type:'column'
-            },
-
-            title:{
-                text:'Analýza událostí'
-            },
-
-            subtitle:{
-                text:'Počet a celkový čas trvání'
-            },
-            xAxis:{
-                categories:datacat
-            },
-
-            yAxis:{
-                min:0,
-                title:{
-                    text:'Počet # a Trvání v hodinách'
-                }
-            },
-
-            legend:{
-                layout:'vertical',
-                backgroundColor:'#FFFFFF',
-                align:'left',
-                verticalAlign:'top',
-                x:100,
-                y:70,
-                floating:true,
-                shadow:true
-            },
-
-            tooltip:{
-                formatter:function () {
-                    return '' +
-                        this.x + ': ' + this.y;
-                }
-            },
-
-            plotOptions:{
-                column:{
-                    pointPadding:0.2,
-                    borderWidth:0
-                }
-            },
-
-            series:[
-                {
-                    name:"Počet #",
-                    data:datacnt
-                },
-                {
-                    name:"Čas v hodinách",
-                    data:datadiff
-                }
-            ]
-        });
-    }
-
-    function statcalc(datalist) {
-        var counter = {};
-        var timediff = {};
-        for (var i = 0; i < datalist.length; i++) {
-            var data = datalist[i];
-            var dt = new Date(data.from_date);
-            var ldt = dt.getFullYear() + "-" + (dt.getMonth()+1);
-            switch ($scope.period.id) {
-                case "D" :
-                    ldt += "-" + dt.getDate();
-                    break;
-                case "H" :
-                    ldt += "-" + dt.getDate();
-                    ldt += " " + dt.getHours();
-                    break;
-            }
-
-            if (typeof(counter[ldt]) === "undefined") {
-                counter[ldt] = 1;
-                timediff[ldt] = datalist[i].timediff / 3600;
-            } else {
-                counter[ldt]++;
-                timediff[ldt] += datalist[i].timediff / 3600;
-            }
-        }
-
-        var arr = [];
-        for (var dt in counter) {
-            var vo = {dt:dt, count:counter[dt], timediff:timediff[dt]};
-            arr.push(vo);
-        }
-
-        return arr;
-    }
+	}; 
+	
+	getLastEvents();
+	$scope.getUsers();
 }

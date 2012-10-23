@@ -1,8 +1,0 @@
-<p>
-    Select station:
-    <select ng:model="selectedStation" ng:change="graphRefresh()" required
-            ng:options="station.station_name for station in stations"></select>
-    limit: <input ng:model="dataLimit" ng:change="graphRefresh()">
-</p>
-
-<div id="graph"></div>

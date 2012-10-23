@@ -67,7 +67,7 @@ dev_server = {
         });
         this.files = [];
     }
-}
+};
 
 
 dev_server.start();
